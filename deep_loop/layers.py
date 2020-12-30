@@ -18,7 +18,8 @@ class AngularOutput(keras.layers.Layer):
         super(AngularOutput, self).__init__()
     
     def call(self, inputs):
-        return tf.atan2
+        angle = tf.atan2(inputs[:,0],inputs[:,1])
+        return tf.reshape(angle, [-1])
     
 class AmplitudeRescalingOutput(keras.layers.Layer):
     def __init__(self, reference_layer):
@@ -27,8 +28,9 @@ class AmplitudeRescalingOutput(keras.layers.Layer):
         
     def call(self, inputs):
         return inputs * self.scaling_factors
+
     
-    
+
 ## z score preprocessing layer
 
 ## arctan2 layer
