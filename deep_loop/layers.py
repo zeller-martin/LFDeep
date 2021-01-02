@@ -4,6 +4,14 @@ from tensorflow import keras
 
     
 class ZscoreTimeseries(keras.layers.Layer):
+    '''
+    A layer which individually z-scores time series contained within a tensor
+    
+    Positional arguments:
+    inputs -- a tensor with shape (N, ...), where N is the number of individual timeseries ...
+    '''
+    
+    
     def __init__(self):
         super(ZscoreTimeseries, self).__init__()
         self.std = None
@@ -14,6 +22,13 @@ class ZscoreTimeseries(keras.layers.Layer):
         return zscored
 
 class AngularOutput(keras.layers.Layer):
+    '''
+    A layer which transforms sine-cosine encoded angles into a phase in the interval [-pi, pi].
+    
+    Positional arguments:
+    inputs -- a tensor with shape (N, 2), where (:, 0) contains sines and (:, 1) the cosines of N angles.
+    '''
+    
     def __init__(self):
         super(AngularOutput, self).__init__()
     
@@ -22,6 +37,8 @@ class AngularOutput(keras.layers.Layer):
         return tf.reshape(angle, [-1])
     
 class AmplitudeRescalingOutput(keras.layers.Layer):
+    
+    
     def __init__(self, reference_layer):
         super(AngularOutput, self).__init__()
         self.scaling_factors = reference_layer.std
