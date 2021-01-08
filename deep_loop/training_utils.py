@@ -1,47 +1,100 @@
 import time
-
-def _expand_to_iterable(x, n_iter):
-    try:
-        iter(x)
-        return x
-    except TypeError:
-        out = [x for i in range(n_iter)]
-        return out
+import tensorflow as tf
+from tensorflow import keras
+import os
+import numpy as np
 
 
-
-def create_training_files(files, file_handler, bandpass_f, channel, n_channels, order = 4, filename = None):
+class DeepLoopGenerator(keras.utils.Sequence) :
     
-    if filename is None:
-        
-
-
+    def _number_of_samples(self, file, bytes_per_sample = 4):
+        return os.path.getsize(file) // 4
     
-class BasicFileHandler:
+    def _create_index_map(self):
+        self._file_lengths = np.zeros( self._n_files )
+        
+        for i, (x_f, y_f) in enumerate( zip(self.x_files, self.y_files) ):
+            n_samples = self._number_of_samples(x_f)
+            assert n_samples == self._number_of_samples(y_f), f"The files {x_f} and {y_f} do not have equal number of samples."
+            assert n_samples > self.size, f"The files {x_f} and {y_f} are too short (minimum length: size = {self.size})."
+            self._file_lengths[i] = n_samples
+        
+        self._total_samples = np.sum(self._file_lengths) - self._n_files * self.size
+        
+        self._file_indices = np.zeros( self._total_samples )
+        self._samples = np.zeros( self._total_samples )
+        
+        j = 0
+        for i, file_len in enumerate(self.file_lengths):
+            valid_indices = file_len - self.size
+            self._file_indices[j : j + valid_indices] = i
+            self._samples[j : j + valid-indices] = np.arange(valid_indices)
+            j += valid_indices
     
-    def __init__(self, fs, order = 'row', dtype = np.int16):
-        self.fs = fs
-        self.order = order
-        self.dtype = dtype
-        
-    def __call__(self, file, band, channel, n_channels):
-        sos = signal.butter(self.order, band, 'bandpass', fs = self.fs, output = 'sos')
-        
-        dat_map = np.memmap(file, dtype = np.int16)
-        
-        if self.order = 'row':
-            target_shape = (dat_map.shape[0] // n_channels, n_channels)
-            dat_map.resize( target_shape )
+    def _load_np_array(self, file):
+        return np.fromfile(file, dtype = np.float32)
+    
+    def _load_memmap(self, file):
+        return np.memmap(file, dtype = np.float32)
+    
+    def _load_data(self):
+        if self.memmap:
+            loading_func = self._load_memmap
         else:
-            target_shape = (n_channels, dat_map.shape[0] // n_channels)
-            dat_map.resize( target_shape )
-            dat_map = dat_map.T
+            loading_func - self._load_np_array
+        
+        for x_f, y_f in zip(self.x_files, self.y_files):
+            self.x_data.append( loading_func(x_f) )
+            self.y_data.append( loading_func(y_f) )
+    
+        
+    
+    def __init__(self, x_files, y_files, batch_size, batches_per_epoch, size, memmap = False) :
+        self.x_files = x_files
+        self.y_files = y_files
+        
+        self.x_data = list()
+        self.y_data = list()
+        
+        assert len(self.x_files) == len(self.y_files), f"Length of x_files ({len(self.x_files)}) should be equal to length of y_files ({len(self.y_files)})!"
+        self._n_files = len(self.x_files)
+        
+        self.batch_size = batch_size
+        self.batches_per_epoch = batches_per_epoch
+        self.size = size
+        self.memmap = memmap
+        
+        self._create_index_map()
+        self._load_data()
+        
+        
+    def __len__(self) :
+        return self.batches_per_epoch
+      
+      
+    def __getitem__(self, idx) :
+        idx_x = np.random.choice(self._total_samples, self.batch_size)
+        idx_y = idx_x + self.size - 1
+        
+        batch_x = list()
+        batch_y = list()
+        
+        for ix, iy in zip(idx_x, idx_y):
+            f_idx = self._file_indices[ix]
+            sample_x = self._samples[ix]
+            sample_y = self._samples[iy]
             
-        data = np.array(dat_map[:, channel])
-        
-        
-        
-        
+            
+            batch_x.append(np.array(
+                            self.x_data[f_idx][sample_x : sample_x + self.size]).resize(( self.size,1 ))
+                          )
+
+            batch_x.append(np.array(
+                            self.y_data[f_idx][sample_y])
+                          )
+
+        return np.array(batch_x), np.array(batch_y)
+
         
 
 
