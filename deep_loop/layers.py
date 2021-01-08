@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-
+from math import pi
 
     
 class ZscoreTimeseries(keras.layers.Layer):
@@ -17,9 +17,9 @@ class ZscoreTimeseries(keras.layers.Layer):
         self.std = None
         
     def call(self, inputs):
-        self.std =  ...
-        zscored = (inputs - mean )/ std
-        return zscored
+        mean = tf.math.reduce_mean(inputs, axis = 1)
+        std = tf.math.reduce_std(inputs, axis = 1)
+        return (inputs - mean) / std
 
 class AngularOutput(keras.layers.Layer):
     '''
@@ -34,7 +34,7 @@ class AngularOutput(keras.layers.Layer):
     
     def call(self, inputs):
         angle = tf.atan2(inputs[:,0],inputs[:,1])
-        return tf.reshape(angle, [-1])
+        return tf.reshape(angle, [-1]) + pi
     
 class AmplitudeRescalingOutput(keras.layers.Layer):
     

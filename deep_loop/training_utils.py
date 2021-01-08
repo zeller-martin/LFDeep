@@ -142,9 +142,6 @@ def split_data(x_files, y_files, split = .2):
     
     return x_train, y_train, x_val, y_val
 
-def circular_loss(y_true, y_pred):
-    y_true = tf.cast(tf.reshape(y_true, [-1]), tf.float32)
-    return tf.sqrt(1 - tf.cos(angle - y_true))
   
 ## training_dataset function
 
