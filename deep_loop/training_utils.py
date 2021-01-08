@@ -98,15 +98,14 @@ class DeepLoopGenerator(keras.utils.Sequence) :
       
     def __getitem__(self, idx) :
         idx_x = np.random.choice(self._total_samples, self.batch_size)
-        idx_y = (idx_x + self.size - 1 + self.y_offset).astype(np.int32)
-        
+
         batch_x = list()
         batch_y = list()
         
-        for ix, iy in zip(idx_x, idx_y):
+        for ix in idx_x
             f_idx = self._file_indices[ix]
             sample_x = self._samples[ix]
-            sample_y = self._samples[iy]
+            sample_y = sample_x + self.size - 1 + self.y_offset
             
             batch_x.append(np.array(
                             self.x_data[f_idx][sample_x : sample_x + self.size]).reshape(( self.size,1 ))
