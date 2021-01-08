@@ -58,7 +58,7 @@ class DeepLoopGenerator(keras.utils.Sequence) :
         if self.memmap:
             loading_func = self._load_memmap
         else:
-            loading_func - self._load_np_array
+            loading_func = self._load_np_array
         
         for x_f, y_f in zip(self.x_files, self.y_files):
             self.x_data.append( loading_func(x_f) )
