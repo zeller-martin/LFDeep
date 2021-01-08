@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 import os
 import numpy as np
-
+from IPython import embed
 
 class DeepLoopGenerator(keras.utils.Sequence) :
     '''
@@ -109,6 +109,7 @@ class DeepLoopGenerator(keras.utils.Sequence) :
             sample_x = self._samples[ix]
             sample_y = self._samples[iy]
             
+            embed()
             
             batch_x.append(np.array(
                             self.x_data[f_idx][sample_x : sample_x + self.size]).resize(( self.size,1 ))
