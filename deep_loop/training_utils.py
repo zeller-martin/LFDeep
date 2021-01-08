@@ -43,9 +43,9 @@ class DeepLoopGenerator(keras.utils.Sequence) :
         
         j = 0
         for i, file_len in enumerate(self._file_lengths):
-            valid_indices = int(file_len - s_lf.size - self.y_offset)
+            valid_indices = int(file_len - self.size - self.y_offset)
             self._file_indices[j : j + valid_indices] = i
-            self._samples[j : j + valid-indices] = np.arange(valid_indices)
+            self._samples[j : j + valid_indices] = np.arange(valid_indices)
             j += valid_indices
     
     def _load_np_array(self, file):
