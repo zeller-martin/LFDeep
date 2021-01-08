@@ -6,6 +6,22 @@ import numpy as np
 
 
 class DeepLoopGenerator(keras.utils.Sequence) :
+    '''
+    Generator to supply DeepLoop models with training data
+    
+    Positional arguments for __init__:
+    x_files -- list, paths to binary files (float32), which contain input data
+    y_files -- list, paths to binary files (float32), which contain output data
+    batch_size -- int, number of training examples in a batch
+    batches_per_epoch -- int, number of batches per epoch
+    size -- int, number of samples to predict from
+    
+    Keyword arguments for __init__:
+    memmap -- bool, whether to use memmap instead of array for large datasets (default: False)
+    y_offset -- int, a known system delay to enhance instantaneous predictions (default: 0)
+    '''
+    
+    
     
     def _number_of_samples(self, file, bytes_per_sample = 4):
         return os.path.getsize(file) // 4
@@ -19,14 +35,14 @@ class DeepLoopGenerator(keras.utils.Sequence) :
             assert n_samples > self.size, f"The files {x_f} and {y_f} are too short (minimum length: size = {self.size})."
             self._file_lengths[i] = n_samples
         
-        self._total_samples = np.sum(self._file_lengths) - self._n_files * self.size
+        self._total_samples = np.sum(self._file_lengths) - self._n_files * (self.size + self.y_offset)
         
         self._file_indices = np.zeros( self._total_samples )
         self._samples = np.zeros( self._total_samples )
         
         j = 0
         for i, file_len in enumerate(self.file_lengths):
-            valid_indices = file_len - self.size
+            valid_indices = file_len - self.size - self.y_offset
             self._file_indices[j : j + valid_indices] = i
             self._samples[j : j + valid-indices] = np.arange(valid_indices)
             j += valid_indices
@@ -49,7 +65,11 @@ class DeepLoopGenerator(keras.utils.Sequence) :
     
         
     
-    def __init__(self, x_files, y_files, batch_size, batches_per_epoch, size, memmap = False) :
+    def __init__(self,
+                 x_files, y_files,
+                 batch_size, batches_per_epoch, size,
+                 memmap = False, y_offset = 0):
+        
         self.x_files = x_files
         self.y_files = y_files
         
@@ -63,6 +83,7 @@ class DeepLoopGenerator(keras.utils.Sequence) :
         self.batches_per_epoch = batches_per_epoch
         self.size = size
         self.memmap = memmap
+        self.y_offset = y_offset
         
         self._create_index_map()
         self._load_data()
@@ -74,7 +95,7 @@ class DeepLoopGenerator(keras.utils.Sequence) :
       
     def __getitem__(self, idx) :
         idx_x = np.random.choice(self._total_samples, self.batch_size)
-        idx_y = idx_x + self.size - 1
+        idx_y = idx_x + self.size - 1 + self.y_offset
         
         batch_x = list()
         batch_y = list()
