@@ -102,7 +102,7 @@ class DeepLoopGenerator(keras.utils.Sequence) :
         batch_x = list()
         batch_y = list()
         
-        for ix in idx_x
+        for ix in idx_x:
             f_idx = self._file_indices[ix]
             sample_x = self._samples[ix]
             sample_y = sample_x + self.size - 1 + self.y_offset
