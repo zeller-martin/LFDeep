@@ -8,7 +8,10 @@ size = 1024
 
 x_files = glob.glob('data/*_raw.float32')
 y_files = glob.glob('data/*_theta_phase.float32')
-                    
+             
+embed()
+
+  
 x_train, y_train, x_val, y_val = deep_loop.split_data(x_files, y_files)
 
 training_generator = deep_loop.DeepLoopGenerator(x_train, y_train, batch_size, batches_per_epoch, size)
