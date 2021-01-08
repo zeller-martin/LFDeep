@@ -18,7 +18,8 @@ class DeepLoopGenerator(keras.utils.Sequence) :
     
     Keyword arguments for __init__:
     memmap -- bool, whether to use memmap instead of array for large datasets (default: False)
-    y_offset -- int, a known system delay to enhance instantaneous predictions (default: 0)
+    y_offset -- int, a known system delay to enhance instantaneous predictions (default: 0).
+                Example: if new data is acquired with a constant delay of 10 ms at a sampling rate of 1 kHz, y_offset = 10 could improve real-time performance
     '''
     
     
