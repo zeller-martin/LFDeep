@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
-batch_size = 1024
+batch_size = 512
 batches_per_epoch = 128
 size = 1024
 
@@ -20,7 +20,14 @@ validation_generator = deep_loop.DeepLoopGenerator(x_val, y_val, batch_size, bat
 
 
 model = deep_loop.create_phase_model()
-model.fit(training_generator, validation_data = validation_generator,  validation_steps=32, steps_per_epoch = batches_per_epoch, epochs = 10, verbose = 1)
+
+embed()
+model.fit(training_generator,
+          validation_data = validation_generator,
+          validation_steps = 32,
+          steps_per_epoch = batches_per_epoch,
+          epochs = 10,
+          verbose = 1)
 
 
 embed()

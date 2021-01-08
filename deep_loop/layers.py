@@ -17,8 +17,8 @@ class ZscoreTimeseries(keras.layers.Layer):
         self.std = None
         
     def call(self, inputs):
-        mean = tf.math.reduce_mean(inputs, axis = 1)
-        std = tf.math.reduce_std(inputs, axis = 1)
+        mean = tf.math.reduce_mean(inputs, axis = 1, keepdims = True)
+        std = tf.math.reduce_std(inputs, axis = 1, keepdims = True)
         return (inputs - mean) / std
 
 class AngularOutput(keras.layers.Layer):
