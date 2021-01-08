@@ -7,7 +7,7 @@ import numpy as np
 
 class DeepLoopGenerator(keras.utils.Sequence) :
     '''
-    Generator to supply DeepLoop models with training data
+    Generator to supply DeepLoop models with training or validation data
     
     Positional arguments for __init__:
     x_files -- list, paths to binary files (float32), which contain input data
@@ -117,7 +117,29 @@ class DeepLoopGenerator(keras.utils.Sequence) :
         return np.array(batch_x), np.array(batch_y)
 
         
-
+def split_data(x_files, y_files, split = .2):
+    '''
+    Helper function to produce training and validation datasets.
+    
+    Positional arguments for __init__:
+    x_files -- list, paths to binary files (float32), which contain input data
+    y_files -- list, paths to binary files (float32), which contain output data
+    '''
+    
+    n_files = len(x_files)
+    assert n_files == len(y_files), f"Length of x_files ({n_files}) should be equal to length of y_files ({len(y_files)})!"
+    
+    n_validation_files = np.ceil(n_files * split)
+    
+    indices = np.random.permutation(n_files)
+    
+    x_train = x_files[indices[n_validation_files:]]
+    y_train = y_files[indices[n_validation_files:]]
+    
+    x_val = x_files[indices[:n_validation_files]]
+    y_val = y_files[indices[:n_validation_files]]
+    
+    return x_train, y_train, x_val, y_val
 
 def circular_loss(y_true, y_pred):
     y_true = tf.cast(tf.reshape(y_true, [-1]), tf.float32)
