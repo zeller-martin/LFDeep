@@ -13,3 +13,6 @@ x_train, y_train, x_val, y_val = deep_loop.split_data(x_files, y_files)
 
 training_generator = deep_loop.DeepLoopGenerator(x_train, y_train, batch_size, batches_per_epoch, size)
 validation_generator = deep_loop.DeepLoopGenerator(x_val, y_val, batch_size, batches_per_epoch, size)
+
+phase_model = deep_loop.create_phase_model()
+phase_model = deep_loop.create_phase_model()
