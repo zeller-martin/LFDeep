@@ -134,11 +134,11 @@ def split_data(x_files, y_files, split = .2):
     
     indices = np.random.permutation(n_files)
     
-    x_train = x_files[indices[n_validation_files:]]
-    y_train = y_files[indices[n_validation_files:]]
+    x_train = [x_files[i] for i in indices[n_validation_files:]]
+    y_train = [y_files[i] for i in indices[n_validation_files:]]
     
-    x_val = x_files[indices[:n_validation_files]]
-    y_val = y_files[indices[:n_validation_files]]
+    x_val = [x_files[i] for i in [indices[:n_validation_files]]
+    y_val = [y_files[i] for i in [indices[:n_validation_files]]
     
     return x_train, y_train, x_val, y_val
 
