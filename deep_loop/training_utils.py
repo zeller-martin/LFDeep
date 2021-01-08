@@ -130,7 +130,7 @@ def split_data(x_files, y_files, split = .2):
     n_files = len(x_files)
     assert n_files == len(y_files), f"Length of x_files ({n_files}) should be equal to length of y_files ({len(y_files)})!"
     
-    n_validation_files = np.ceil(n_files * split)
+    n_validation_files = int( n_files * split )
     
     indices = np.random.permutation(n_files)
     
