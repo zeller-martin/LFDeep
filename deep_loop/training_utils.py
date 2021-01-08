@@ -114,7 +114,7 @@ class DeepLoopGenerator(keras.utils.Sequence) :
                             self.x_data[f_idx][sample_x : sample_x + self.size]).resize(( self.size,1 ))
                           )
 
-            batch_x.append(np.array(
+            batch_y.append(np.array(
                             self.y_data[f_idx][sample_y])
                           )
 
