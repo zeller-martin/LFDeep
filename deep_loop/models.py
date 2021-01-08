@@ -2,12 +2,10 @@ import tensorflow as tf
 from tensorflow import keras
 from tf.keras import layers
 
-_default_layers = [
-  
-]
+_default_layers = []
 
 
-
+'''
 def create_phase_model(input_shape = 1024, middle_layers = _default_layers ):
     layers = [layers.Input,
               Zscore_Timeseries ...]
@@ -21,3 +19,4 @@ def create_phase_model(input_shape = 1024, middle_layers = _default_layers ):
     return model
     
 def create_amplitude_model(input_shape = 1024, middle_layers = _default_layers ):
+'''
