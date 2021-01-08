@@ -37,7 +37,7 @@ class DeepLoopGenerator(keras.utils.Sequence) :
             self._file_lengths[i] = n_samples
         
         self._total_samples = np.sum(self._file_lengths) - self._n_files * (self.size + self.y_offset)
-        
+        self._total_samples = int(self._total_samples)
         self._file_indices = np.zeros( self._total_samples )
         self._samples = np.zeros( self._total_samples )
         
