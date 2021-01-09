@@ -8,13 +8,12 @@ class ZscoreTimeseries(keras.layers.Layer):
     A layer which individually z-scores time series contained within a tensor
     
     Positional arguments:
-    inputs -- a tensor with shape (N, ...), where N is the number of individual timeseries ...
+    inputs -- a tensor with shape (N, T, 1), where N is the number of individual timeseries and T the number of samples.
     '''
     
     
     def __init__(self):
         super(ZscoreTimeseries, self).__init__()
-        self.std = None
         
     def call(self, inputs):
         mean = tf.math.reduce_mean(inputs, axis = 1, keepdims = True)
@@ -37,11 +36,15 @@ class AngularOutput(keras.layers.Layer):
         return tf.reshape(angle, [-1]) + pi
     
 class AmplitudeRescalingOutput(keras.layers.Layer):
+    '''
+    A layer which takes output values predicted from z-scored timeseries, and scales it back using the std of the input timeseries.
     
+    Positional arguments:
+    ....
+    '''
     
     def __init__(self, reference_layer):
         super(AngularOutput, self).__init__()
-        self.scaling_factors = reference_layer.std
         
     def call(self, inputs):
         return inputs * self.scaling_factors
