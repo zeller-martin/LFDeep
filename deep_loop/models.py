@@ -8,10 +8,10 @@ _default_layers_phase = [
         #layers.Conv1D(128, kernel_size= 128, padding = 'same', activation='tanh'),
         layers.AveragePooling1D(pool_size = 16),
         layers.Flatten(),
-        layers.Dense(4096, activation='tanh'),
-        layers.Dense(2048, activation='tanh'),
-        layers.Dense(512, activation='tanh'),
-        layers.Dense(512, activation='tanh'),
+        layers.Dense(8192, activation='tanh'),
+        layers.Dense(8192, activation='tanh'),
+        layers.Dense(8192, activation='tanh'),
+        layers.Dense(8192, activation='tanh'),
         layers.Dense(2, activation='tanh'),]
 
 _default_optimizer = keras.optimizers.Adam(learning_rate=0.0005)

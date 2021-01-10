@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 import os
 import numpy as np
+import pycircstat as pcs
 
 class DeepLoopGenerator(keras.utils.Sequence) :
     '''
@@ -19,6 +20,7 @@ class DeepLoopGenerator(keras.utils.Sequence) :
     memmap -- bool, whether to use memmap instead of array for large datasets (default: False)
     y_offset -- int, a known system delay to enhance instantaneous predictions (default: 0).
                 Example: if new data is acquired with a constant delay of 10 ms at a sampling rate of 1 kHz, y_offset = 10 could improve real-time performance
+    preprocessing_callback -- function, to be applied to training data snippets, to mimic processing steps such as filtering
     '''
     
     
@@ -66,12 +68,15 @@ class DeepLoopGenerator(keras.utils.Sequence) :
             self.x_data.append( loading_func(x_f) )
             self.y_data.append( loading_func(y_f) )
     
-        
+    def _identity_preprocessing_callback(self, x):
+        return x
     
     def __init__(self,
                  x_files, y_files,
                  batch_size, batches_per_epoch, size,
-                 memmap = False, y_offset = 0):
+                 memmap = False,
+                 y_offset = 0,
+                 preprocessing_callback = None):
         
         self.x_files = x_files
         self.y_files = y_files
@@ -88,6 +93,11 @@ class DeepLoopGenerator(keras.utils.Sequence) :
         self.memmap = memmap
         self.y_offset = y_offset
         
+        if preprocessing_callback is None:
+            self._preprocessing_callback = self._identity_preprocessing_callback
+        else:
+           self._preprocessing_callback = preprocessing_callback
+        
         self._create_index_map()
         self._load_data()
         
@@ -97,19 +107,20 @@ class DeepLoopGenerator(keras.utils.Sequence) :
       
       
     def __getitem__(self, idx) :
-        idx_x = np.random.choice(self._total_samples, self.batch_size)
+        self.idx_x = np.random.choice(self._total_samples, self.batch_size)
 
         batch_x = list()
         batch_y = list()
         
-        for ix in idx_x:
+        for ix in self.idx_x:
             f_idx = self._file_indices[ix]
             sample_x = self._samples[ix]
             sample_y = sample_x + self.size - 1 + self.y_offset
             
-            batch_x.append(np.array(
-                            self.x_data[f_idx][sample_x : sample_x + self.size]).reshape(( self.size,1 ))
-                          )
+            x_example = np.array(self.x_data[f_idx][sample_x : sample_x + self.size]).flatten()
+            x_example = self._preprocessing_callback(x_example)
+            
+            batch_x.append(x_example.reshape(( self.size,1 )) )
 
             batch_y.append(np.array(
                             self.y_data[f_idx][sample_y])
@@ -142,7 +153,20 @@ def split_data(x_files, y_files, split = .2):
     
     return x_train, y_train, x_val, y_val
 
-  
+def evaluate_phase_model(model, validation_generator):
+    x, y = validation_generator[0]
+    y_pred = model(x)
+    cdiff = pcs.cdiff(y, y_pred)
+    plt.hist(cdiff, bins = 20)
+    mace = np.mean(np.abs(cdiff))
+    print('MACE: {mace}')
+    plt.show()
+
+
+def evaluate_amplitude_model(model, validation_generator):
+    pass
+
+
 ## training_dataset function
 
 ### data generators
