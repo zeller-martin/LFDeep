@@ -155,7 +155,7 @@ def split_data(x_files, y_files, split = .2):
 
 def evaluate_phase_model(model, validation_generator):
     x, y = validation_generator[0]
-    y_pred = model(x)
+    y_pred = model(x).numpy()
     cdiff = pcs.cdiff(y, y_pred)
     plt.hist(cdiff, bins = 20)
     mace = np.mean(np.abs(cdiff))
