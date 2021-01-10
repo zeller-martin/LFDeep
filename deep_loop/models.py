@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-from .layers import ZscoreTimeseries, AngularOutput, AmplitudeRescalingOutput
+from .layers import Zscore1D, AngularOutput, ZRescale1D
 
 _default_layers_phase = [
         layers.Conv1D(128, kernel_size= 128, padding = 'same', activation='linear'),
@@ -24,7 +24,7 @@ def create_phase_model(input_shape = 1024,
                        middle_layers = _default_layers_phase,
                        optimizer = _default_optimizer):
     
-    layers = [keras.Input(shape=( 1024,  1)), ZscoreTimeseries()]
+    layers = [keras.Input(shape=( 1024,  1)), Zscore1D()]
     layers.extend(middle_layers)
     layers.append(AngularOutput())
                   
