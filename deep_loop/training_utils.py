@@ -148,3 +148,101 @@ def split_data(x_files, y_files, split = .2):
 ### data generators
 
 
+
+def hilbert_phase(y):
+    return np.angle(signal.hilbert(y))
+
+def trough_to_trough_phase(y):
+    peaks, _ = signal.find_peaks(y)
+    troughs, _ = signal.find_troughs(-y)
+    
+    is_peak = np.zeros(peaks.shape[0] + troughs.shape[0], dtype = np.bool_)
+    is_peak[:peaks.shape[0]] = True
+    ind = np.zeros(peaks.shape[0] + troughs.shape[0],dtype=np.uint32)
+    ind[:peaks.shape[0]] = peaks
+    ind[peaks.shape[0]:] = troughs
+    sorting = np.argsort(ind)
+    ind = ind[sorting]
+    is_peak = is_peak[sorting]
+    phase = 0 * x
+    
+    for (i1, i2) , p in zip(zip(ind[:-1], ind[1:]), is_peak[:-1]):
+        lin = (np.arange(i2 - i1) / (i2 - i1)) * np.pi
+        if p:
+            phase[i1:i2] = lin
+        else:
+            phase[i1:i2] = lin - np.pi
+    
+    return phase
+    
+def hilbert_amplitude(y):
+    return np.abs(signal.hilbert(y))
+
+def _make_gauss_kernel(dt, sigma, width = 5):
+    n_timesteps = 2 * width * sigma / dt + 1
+    time_axis = np.arange(n_timesteps) * dt
+    time_axis -= np.median(time_axis)
+    y = np.exp(-time_axis**2 / (2 * sigma**2))
+    y /= np.sum(y)
+    return y
+
+def rms_amplitude(y,
+                  sampling_rate = None,
+                  kernel_sd_seconds = None):
+    
+    if None in (sampling_rate, kernel_sd_second):
+        raise ValueError('sampling_rate and kernel_sd_seconds have to be specified!')
+
+    kernel = _make_gauss_kernel(1 / sampling_rate, kernel_sd_seconds)
+    return signal.oaconvolve(y**2, kernel, mode = 'same')**.5
+
+def phase_training_files(src_file,
+                         n_channels = 1,
+                         selected_channel = 0,
+                         corner_frequencies = None,
+                         sampling_rate = None,
+                         phase_extraction_function = hilbert_phase,
+                         dest_folder = './',
+                         tag = None, 
+                         src_precision = np.int16,
+                         src_order = 'row'):
+    
+    if None in (corner_frequencies, sampling_rate):
+        raise ValueError('corner_frequencies and sampling_rate have to be specified!')
+    
+    data = np.fromfile(src_file, dtype = src_precision)
+    
+    if src_order == 'row':
+        data.resize(data.shape[0] // n_channels, n_channels)
+        y = data[:, selected_channel]
+    elif src_order in ('col', 'column'):
+        data.resize(n_channels, data.shape[0] // n_channels)
+        x = data[selected_channel, :]
+    else:
+        raise ValueError(f'src_order not understood - "row", "col" and "column" permissible, given was "{src_order}".')
+        
+    sos = signal.butter(4, corner_frequencies, 'bandpass', fs = sampling_rate, output = 'sos')
+    x_filtered = signal.sosfiltfilt(sos, x)
+    
+    phase = phase_extraction_function(x_filtered)
+    fbase, _ = os.path.splitext(os.path.split(src_file)[1])
+    
+    if tag is None:
+        x_filename = '_'.join(fbase, 'rawx') + '.float32'
+        y_filename = '_'.join(fbase, 'phase') + '.float32'
+    else:
+        x_filename = '_'.join(fbase, tag, 'rawx') + '.float32'
+        y_filename = '_'.join(fbase, tag, 'phase') + '.float32'
+        
+    x_filename = os.path.join(dest_folder, x_filename)
+    y_filename = os.path.join(dest_folder, y_filename)
+    x.astype(np.float32).tofile(x_filename)
+    phase.astype(np.float32).tofile(y_filename)
+    
+    print(f'Preprocessed {src_file}.')
+    print(f'Outputs saved to {x_filename} and {y_filename}.')
+
+    
+    
+    
+    
