@@ -196,6 +196,8 @@ def rms_amplitude(y,
     kernel = _make_gauss_kernel(1 / sampling_rate, kernel_sd_seconds)
     return signal.oaconvolve(y**2, kernel, mode = 'same')**.5
 
+
+
 def phase_training_files(src_file,
                          n_channels = 1,
                          selected_channel = 0,
