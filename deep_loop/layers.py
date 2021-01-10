@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 
     
-class ZscoreTimeseries(keras.layers.Layer):
+class Zscore1D(keras.layers.Layer):
     '''
     A layer which individually z-scores time series contained within a tensor
     
@@ -34,7 +34,7 @@ class AngularOutput(keras.layers.Layer):
         angle = tf.atan2(inputs[:,0],inputs[:,1])
         return tf.reshape(angle, [-1]) 
     
-class AmplitudeRescalingOutput(keras.layers.Layer):
+class ZRescale1D(keras.layers.Layer):
     '''
     A layer which takes output values predicted from z-scored timeseries, and scales it back using the std of the input timeseries.
     
