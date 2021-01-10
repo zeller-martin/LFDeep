@@ -12,7 +12,7 @@ class Zscore1D(keras.layers.Layer):
     
     
     def __init__(self):
-        super(ZscoreTimeseries, self).__init__()
+        super(Zscore1D, self).__init__()
         
     def call(self, inputs):
         mean = tf.math.reduce_mean(inputs, axis = 1, keepdims = True)
@@ -43,7 +43,7 @@ class ZRescale1D(keras.layers.Layer):
     '''
     
     def __init__(self, reference_layer):
-        super(AngularOutput, self).__init__()
+        super(ZRescale1D, self).__init__()
         
     def call(self, inputs):
         return inputs * self.scaling_factors
