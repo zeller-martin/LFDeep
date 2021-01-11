@@ -157,6 +157,14 @@ def split_data(x_files, y_files, split = .2):
     return x_train, y_train, x_val, y_val
 
 def evaluate_phase_model(model, validation_generator):
+    '''
+    Helper function for a quick graphical evaluation of a phase model.
+    
+    Positional arguments:
+    model -- an LFDeep phase model
+    validation_generator -- a DataGenerator that produces data unseen during training
+    '''
+    
     x, y = validation_generator[0]
     y_pred = model(x).numpy().flatten()
     cdiff = pcs.cdiff(y, y_pred)
@@ -174,6 +182,13 @@ def evaluate_phase_model(model, validation_generator):
 
 
 def evaluate_amplitude_model(model, validation_generator):
+     '''
+    Helper function for a quick graphical evaluation of an amplitude model.
+    
+    Positional arguments:
+    model -- an LFDeep phase model
+    validation_generator -- a DataGenerator that produces data unseen during training
+    '''
     x, y = validation_generator[0]
     y_pred = model(x).numpy().flatten()
     
