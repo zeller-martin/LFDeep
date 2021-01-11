@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from .layers import *
-
+from .losses import *
 
 # model defaults
 
@@ -13,36 +13,6 @@ _default_layers = [
         layers.Dense(2048, activation='relu'),]
 
 _default_optimizer = keras.optimizers.Adam(learning_rate=0.001)
-
-
-def circular_loss(y_true, y_pred):
-    '''
-    Computes the circular loss of two tensors.
-    
-    Positional arguments:
-    y_true -- a tensor with shape (N, 1), where N is the number of ground-truth angles
-    y_pred -- a tensor with shape (N, 1), where N is the number of predicted angles
-    '''
-    y_true = tf.cast(tf.reshape(y_true, [-1]), tf.float32)
-    return tf.sqrt(1.001 - tf.cos(y_pred - y_true)) # not using a flat 1 will prevent that tf.sqrt occassionaly return nan
-
-def mean_abs_zscore_difference(y_true, y_pred):
-    '''
-    Performs z-scoring within a batch, and computes loss as the mean absolute difference.
-    
-    Positional arguments:
-    y_true -- a tensor with shape (N, 1)
-    y_pred -- a tensor with shape (N, 1)
-    '''
-    mean = tf.math.reduce_mean(y_true)
-    std = tf.math.reduce_std(y_true)
-    y_true = y_true - mean
-    y_pred = y_pred - mean
-    y_true = y_true / std
-    y_pred = y_pred / std
-    return tf.reduce_mean(tf.math.abs(y_true - y_pred))
-
-# functions to create new models
 
 def create_phase_model(input_shape = 1024,
                        middle_layers = _default_layers,
