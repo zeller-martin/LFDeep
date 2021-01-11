@@ -6,6 +6,7 @@ import numpy as np
 import pycircstat as pcs
 import matplotlib.pyplot as plt
 from scipy import signal
+from scipy import stats
 
 class DeepLoopGenerator(keras.utils.Sequence) :
     '''
@@ -157,17 +158,37 @@ def split_data(x_files, y_files, split = .2):
 
 def evaluate_phase_model(model, validation_generator):
     x, y = validation_generator[0]
-    y_pred = model(x).numpy()
+    y_pred = model(x).numpy().flatten()
     cdiff = pcs.cdiff(y, y_pred)
-    plt.hist(cdiff, bins = 20)
+    plt.hist(cdiff, bins = 20, density = True)
+    
+    ax = plt.gca()
+    
+    ax.set_xticks(np.linspace(-1, 1, 5) * np.pi)
+    ax.set_xticklabels(['-$\pi$', '-$\pi / 2$', '0', '$\pi / 2$', '$\pi$' ])
+    ax.set_xlabel('Circular error / rad')
+    ax.set_ylabel('Probablity density / rad$^{-1}$')
     mace = np.mean(np.abs(cdiff))
-    print('MACE: {mace}')
+    print(f'MACE: {mace}')
     plt.show()
 
 
 def evaluate_amplitude_model(model, validation_generator):
-    pass
-
+    x, y = validation_generator[0]
+    y_pred = model(x).numpy().flatten()
+    
+    mean = np.mean(y)
+    std = np.std(y)
+    y_z = (y - mean) / std
+    y_pred_z = (y_pred - mean) / std
+    
+    plt.plot(y_z, y_pred_z, '.')
+    
+    plt.xlabel('True amplitude / $z$-score')
+    plt.ylabel('Predicted amplitude / $z$-score')
+    r, _ = stats.pearsonr(y_z, y_pred_z)
+    print(f"R_sq = {r**2}")
+    plt.show()
 
 ## training_dataset function
 
@@ -216,13 +237,19 @@ def rms_amplitude(y,
                   sampling_rate = None,
                   kernel_sd_seconds = None):
     
-    if None in (sampling_rate, kernel_sd_second):
+    if None in (sampling_rate, kernel_sd_seconds):
         raise ValueError('sampling_rate and kernel_sd_seconds have to be specified!')
 
     kernel = _make_gauss_kernel(1 / sampling_rate, kernel_sd_seconds)
     return signal.oaconvolve(y**2, kernel, mode = 'same')**.5
 
 
+
+
+
+def bandpass_filter(y, corner_frequencies, sampling_rate):
+    sos = signal.butter(4, corner_frequencies, 'bandpass', fs = sampling_rate, output = 'sos')
+    return signal.sosfiltfilt(sos, y)
 
 def phase_training_files(src_file,
                          n_channels = 1,
@@ -249,8 +276,7 @@ def phase_training_files(src_file,
     else:
         raise ValueError(f'src_order not understood - "row", "col" and "column" permissible, given was "{src_order}".')
         
-    sos = signal.butter(4, corner_frequencies, 'bandpass', fs = sampling_rate, output = 'sos')
-    x_filtered = signal.sosfiltfilt(sos, x)
+    x_filtered = bandpass_filter(x, corner_frequencies, sampling_rate)
     
     phase = phase_extraction_function(x_filtered)
     fbase, _ = os.path.splitext(os.path.split(src_file)[1])

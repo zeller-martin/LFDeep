@@ -36,7 +36,7 @@ class AngularOutput(keras.layers.Layer):
     
 class ZRescale1D(keras.layers.Layer):
     '''
-    A layer which takes output values predicted from z-scored timeseries, and scales it back using the std of the input timeseries.
+    A layer which takes output values predicted from z-scored timeseries, and scales it backusing the std of the input timeseries.
     
     Positional arguments:
     ....
@@ -48,10 +48,17 @@ class ZRescale1D(keras.layers.Layer):
     def call(self, inputs):
         return inputs * self.scaling_factors
 
+class Std1D(keras.layers.Layer):
+    '''
+    A layer which computes the standard eviation of time series contained within a tensor.
     
-
-## z score preprocessing layer
-
-## arctan2 layer
-
-## z-score to actual amplitude transformation layer
+    The intended purpose is to rescale the outputs of a model that starts with a Zscore1D layer.
+    
+    Positional arguments:
+    inputs -- a tensor with shape (N, T, 1), where N is the number of individual timeseries and T the number of samples.
+    '''
+    def __init__(self):
+        super(Std1D, self).__init__()
+        
+    def call(self, inputs):
+        return tf.math.reduce_std(inputs, axis = 1)
