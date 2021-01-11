@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
-batch_size = 2048
+batch_size = 8192
 batches_per_epoch = 32
 size = 1024
 
@@ -15,12 +15,11 @@ y_files = glob.glob('data/*CA1*_gamma_hi_phase.float32')
 
 
 test_layers = [
-        layers.Conv1D(64, kernel_size= 64, padding = 'same', activation='linear'),
+        layers.Conv1D(16, kernel_size= 64, padding = 'same', activation='linear'),
         #layers.Conv1D(128, kernel_size= 128, padding = 'same', activation='tanh'),
         layers.Flatten(),
-        layers.Dense(2048, activation='relu'),
-        layers.Dense(1024, activation='relu'),
-        layers.Dense(2, activation='tanh'),]
+        layers.Dense(4096, activation='relu'),
+        layers.Dense(2, activation='linear'),]
 
 x_train, y_train, x_val, y_val = deep_loop.split_data(x_files, y_files)
 
@@ -36,7 +35,7 @@ model.fit(training_generator,
           validation_data = validation_generator,
           validation_steps = 32,
           steps_per_epoch = batches_per_epoch,
-          epochs = 500,
+          epochs = 50,
           verbose = 1)
 
 
