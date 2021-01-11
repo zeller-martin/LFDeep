@@ -4,8 +4,8 @@ from scipy import signal
 
 
 def read_binary_channel(src_file,
-                n_channels = 1,
-                selected_channel = 0,
+                n_channels,
+                selected_channel,
                 src_precision = np.int16,
                 src_order = 'row'):
     data = np.fromfile(src_file, dtype = src_precision)
