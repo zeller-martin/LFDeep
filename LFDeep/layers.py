@@ -33,20 +33,6 @@ class AngularOutput(keras.layers.Layer):
     def call(self, inputs):
         angle = tf.atan2(inputs[:,0],inputs[:,1])
         return tf.reshape(angle, [-1]) 
-    
-class ZRescale1D(keras.layers.Layer):
-    '''
-    A layer which takes output values predicted from z-scored timeseries, and scales it backusing the std of the input timeseries.
-    
-    Positional arguments:
-    ....
-    '''
-    
-    def __init__(self, reference_layer):
-        super(ZRescale1D, self).__init__()
-        
-    def call(self, inputs):
-        return inputs * self.scaling_factors
 
 class Std1D(keras.layers.Layer):
     '''
