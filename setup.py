@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='deep_loop',
+    name='LFDeep',
     version='0.1',
     description='Tools for ephys analysis',
     author='Martin Zeller',
