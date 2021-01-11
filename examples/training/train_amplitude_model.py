@@ -1,4 +1,4 @@
-import deep_loop
+import LFDeep
 import glob
 from IPython import embed
 import tensorflow as tf
@@ -13,13 +13,13 @@ x_files = glob.glob('data/*CA1*_raw.float32')
 y_files = glob.glob('data/*CA1*_theta_amp.float32')
              
 
-x_train, y_train, x_val, y_val = deep_loop.split_data(x_files, y_files)
+x_train, y_train, x_val, y_val = LFDeep.split_data(x_files, y_files)
 
-training_generator = deep_loop.DeepLoopGenerator(x_train, y_train, batch_size, batches_per_epoch, size)
-validation_generator = deep_loop.DeepLoopGenerator(x_val, y_val, batch_size, batches_per_epoch, size)
+training_generator = LFDeep.DataGenerator(x_train, y_train, batch_size, batches_per_epoch, size)
+validation_generator = LFDeep.DataGenerator(x_val, y_val, batch_size, batches_per_epoch, size)
 
 
-model = deep_loop.create_amplitude_model()
+model = LFDeep.create_amplitude_model()
 
 model.summary()
 
@@ -30,6 +30,6 @@ model.fit(training_generator,
           epochs = 100,
           verbose = 1)
 
-deep_loop.evaluate_amplitude_model(model, validation_generator)
+LFDeep.evaluate_amplitude_model(model, validation_generator)
 
 embed()
