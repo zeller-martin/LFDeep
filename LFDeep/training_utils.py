@@ -10,7 +10,7 @@ from scipy import stats
 
 class DataGenerator(keras.utils.Sequence) :
     '''
-    Generator to supply DeepLoop models with training or validation data
+    Generator to supply LFDeep models with training or validation data
     
     Positional arguments for __init__:
     x_files -- list, paths to binary files (float32), which contain input data
