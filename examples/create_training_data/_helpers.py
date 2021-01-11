@@ -3,7 +3,7 @@ from scipy import signal
 
 
 
-def read_binary(src_file,
+def read_binary_channel(src_file,
                 n_channels = 1,
                 selected_channel = 0,
                 src_precision = np.int16,
