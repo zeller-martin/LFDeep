@@ -34,8 +34,8 @@ def mean_abs_zscore_difference(y_true, y_pred):
     y_true -- a tensor with shape (N, 1)
     y_pred -- a tensor with shape (N, 1)
     '''
-    mean = tf.math.reduce_mean(y_true, axis = 1, keepdims = True)
-    std = tf.math.reduce_std(y_true, axis = 1, keepdims = True)
+    mean = tf.math.reduce_mean(y_true)
+    std = tf.math.reduce_std(y_true)
     y_true = y_true - mean
     y_pred = y_pred - mean
     y_true = y_true / std

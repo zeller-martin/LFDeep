@@ -27,7 +27,7 @@ model.fit(training_generator,
           validation_data = validation_generator,
           validation_steps = 32,
           steps_per_epoch = batches_per_epoch,
-          epochs = 100,
+          epochs = 5,
           verbose = 1)
 
 LFDeep.evaluate_amplitude_model(model, validation_generator)

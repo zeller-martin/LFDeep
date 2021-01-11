@@ -178,11 +178,9 @@ def evaluate_phase_model(model, validation_generator):
     ax.set_ylabel('Probablity density / rad$^{-1}$')
     mace = np.mean(np.abs(cdiff))
     print(f'MACE: {mace}')
-    plt.show()
-
 
 def evaluate_amplitude_model(model, validation_generator):
-     '''
+    '''
     Helper function for a quick graphical evaluation of an amplitude model.
     
     Positional arguments:
@@ -191,13 +189,12 @@ def evaluate_amplitude_model(model, validation_generator):
     '''
     x, y = validation_generator[0]
     y_pred = model(x).numpy().flatten()
-    
     mean = np.mean(y)
     std = np.std(y)
     y_z = (y - mean) / std
     y_pred_z = (y_pred - mean) / std
     
-    plt.plot(y_z, y_pred_z, '.')
+    plt.hist2d(y_z, y_pred_z, bins = 100)
     
     plt.xlabel('True amplitude / $z$-score')
     plt.ylabel('Predicted amplitude / $z$-score')
