@@ -3,7 +3,6 @@ import tensorflow as tf
 from tensorflow import keras
 import os
 import numpy as np
-import pycircstat as pcs
 import matplotlib.pyplot as plt
 from scipy import signal
 from scipy import stats
@@ -156,6 +155,11 @@ def split_data(x_files, y_files, split = .2):
     
     return x_train, y_train, x_val, y_val
 
+
+def _circular_difference(x,y):
+    z = x-y
+    return (z + np.pi) % (2*np.pi) - np.pi
+
 def evaluate_phase_model(model, validation_generator):
     '''
     Helper function for a quick graphical evaluation of a phase model.
@@ -167,7 +171,7 @@ def evaluate_phase_model(model, validation_generator):
     
     x, y = validation_generator[0]
     y_pred = model(x).numpy().flatten()
-    cdiff = pcs.cdiff(y, y_pred)
+    cdiff = _circular_difference(y, y_pred)
     plt.hist(cdiff, bins = 20, density = True)
     
     ax = plt.gca()
