@@ -5,6 +5,7 @@ import os
 import numpy as np
 import pycircstat as pcs
 import matplotlib.pyplot as plt
+from scipy import signal
 
 class DeepLoopGenerator(keras.utils.Sequence) :
     '''
