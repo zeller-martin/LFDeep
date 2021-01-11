@@ -6,7 +6,7 @@ The projected and intended use lies in real-time prediction on local field poten
 
 # Prerequisities
 
-LFDeep needs Tensorflow 2, numpy, scipy and matplotlib. Having a GPU Tensorflow installation will speed up training and inference, but for the comparatively shallow networks it is not strictly necessary.
+LFDeep needs Tensorflow 2, numpy, scipy and matplotlib. Having a GPU Tensorflow installation will speed up training and inference, but for the comparatively shallow networks it is not strictly necessary. Examples may have additional dependencies.
 
 # Installation
 
