@@ -21,6 +21,10 @@ def read_binary_channel(src_file,
  
     return x
 
+def resample(x, src_rate, target_rate):
+  n_samples = int(x.shape[0] * target_rate / src_rate)
+  return signal.resample(x, n_samples)
+
 def bandpass_filter(x, corner_frequencies, sampling_rate):
     sos = signal.butter(4, corner_frequencies, 'bandpass', fs = sampling_rate, output = 'sos')
     return signal.sosfiltfilt(sos, x)
