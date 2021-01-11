@@ -9,7 +9,7 @@ def circular_loss(y_true, y_pred):
     y_pred -- a tensor with shape (N, 1), where N is the number of predicted angles
     '''
     y_true = tf.cast(tf.reshape(y_true, [-1]), tf.float32)
-    return tf.sqrt(1.001 - tf.cos(y_pred - y_true)) # not using a flat 1 will prevent that tf.sqrt occassionaly return nan
+    return tf.sqrt(1.001 - tf.cos(y_pred - y_true)) # not using a flat 1 prevents that tf.sqrt will occasionally return nan
 
 def mean_abs_zscore_difference(y_true, y_pred):
     '''
