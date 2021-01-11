@@ -41,11 +41,8 @@ def _make_gauss_kernel(dt, sigma, width = 5):
     return y
 
 def rms_amplitude(x,
-                  sampling_rate = None,
-                  kernel_sd_seconds = None):
-    
-    if None in (sampling_rate, kernel_sd_seconds):
-        raise ValueError('sampling_rate and kernel_sd_seconds have to be specified!')
+                  sampling_rate,
+                  kernel_sd_seconds):
 
     kernel = _make_gauss_kernel(1 / sampling_rate, kernel_sd_seconds)
     return signal.oaconvolve(x**2, kernel, mode = 'same')**.5
