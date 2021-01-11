@@ -1,4 +1,4 @@
-# LFdeepP
+# LFDeep
 
 LFDeep contains utilities to predict the instantaneous amplitude and phase of a signal in a specific frequency band under causal conditions, using the unfiltered broadband signal as an input. The repository contains code for end-to-end training of neural networks in Keras, given training data where amplitude or phase are extracted from the broadband input using digital acausal filtering.
 
