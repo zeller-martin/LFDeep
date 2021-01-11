@@ -13,6 +13,6 @@ The projected and intended use lies in real-time prediction on local field poten
 Proceed as follows:
 
 1. Choose a dataset, and decide whether to predict amplitude or phase.
-1. Create training data, by subsampling to e.g. 1 kHz, and saving raw binaries in float32 of the broadbrand signal and extracted amplitudes. An example script is found at ...
-1. Train and evaluate the network. An example ..
-1. Incorporate prediction into your specific setup for closed-loop stimulation. An exemplary full description of a hard- and software system with LFDeep at its core is given in ..
+1. Create training data, by subsampling to e.g. 1 kHz, and saving raw binaries in float32 of the broadbrand signal and extracted amplitudes. An example script is found at examples/create_training_data/script.py.
+1. Train and evaluate the network. Example workflows are given in examples/training/.
+1. Incorporate prediction into your specific setup for closed-loop stimulation. An exemplary full description of a hard- and software system with LFDeep at its core is given in examples/implementation.
