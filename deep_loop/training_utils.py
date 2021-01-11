@@ -4,6 +4,7 @@ from tensorflow import keras
 import os
 import numpy as np
 import pycircstat as pcs
+from scipy import signal
 
 class DeepLoopGenerator(keras.utils.Sequence) :
     '''
