@@ -6,7 +6,11 @@ The projected and intended use lies in real-time prediction on local field poten
 
 # Prerequisities
 
+to be written ...
+
 # Installation
+
+to be written ...
 
 # Quickstart
 
