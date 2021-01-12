@@ -46,7 +46,7 @@ def create_phase_model(input_shape,
     
     input = keras.Input(shape=( input_shape,  1))
     output = create_phase_branch(input)
-    model = keras.Model(inputs=inputs, outputs=output, name="phase_model")
+    model = keras.Model(inputs=input, outputs=output, name="phase_model")
     model.compile(optimizer = optimizer, loss = loss)
     return model
 
@@ -67,7 +67,7 @@ def create_amplitude_model(input_shape = 1024,
     
     input = keras.Input(shape=( input_shape,  1))
     output = create_amplitude_branch(input)
-    model = keras.Model(inputs=inputs, outputs=output, name="amplitude_model")
+    model = keras.Model(inputs=input, outputs=output, name="amplitude_model")
     model.compile(optimizer = optimizer, loss = loss)
     return model
     
@@ -75,19 +75,16 @@ def create_joint_model(input_shape,
                        middle_layers_amplitude = _default_layers,
                        middle_layers_amplitude = _default_layers,
                        optimizer = _default_optimizer,
-                       loss = mean_abs_zscore_difference):
+                       loss_amplitude = mean_abs_zscore_difference,
+                       loss_phase = circular_loss):
     '''
     Predict instantaneous amplitude and phase of a band within a broadband signal. Uses functional API.
-    
-    Keyword arguments:
-    input_shape -- number of samples contained within a single input time series, default: 1024
-    middle_layers -- model architecture after z-scoring and before amplitude output, default: see deep_loop/models.py
-    optimizer -- training optimizer, default: keras.optimizers.Adam(learning_rate=0.001)
-    loss -- a loss function that should be circular, default: mean_abs_zscore_difference
+
     '''
     
     input = keras.Input(shape=( 1024,  1))
-    output = create_amplitude_branch(input)
-    model = keras.Model(inputs=inputs, outputs=output, name="amplitude_model")
-    model.compile(optimizer = optimizer, loss = loss)
+    output_amplitude = create_amplitude_branch(input)
+    output_phase = create_amplitude_branch(input)
+    model = keras.Model(inputs=inputs, outputs= [output_amplitude, output_phase ], name="joint_model")
+    model.compile(optimizer = optimizer, loss = [loss_amplitude, loss_phase])
     return model
