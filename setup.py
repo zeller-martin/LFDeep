@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='LFDeep',
+    name='LFPredict',
     version='0.1',
     description='Deep learning for predicting instantaneous band-limited amplitude and phase from broadband signals.',
     author='Martin Zeller',
