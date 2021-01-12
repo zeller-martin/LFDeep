@@ -1,4 +1,4 @@
-import LFDeep
+import LFPredict
 import glob
 from IPython import embed
 import tensorflow as tf
@@ -15,11 +15,11 @@ y_files = glob.glob('data/*CA1*_theta_amp.float32')
 
 x_train, y_train, x_val, y_val = LFDeep.split_data(x_files, y_files)
 
-training_generator = LFDeep.DataGenerator(x_train, y_train, batch_size, batches_per_epoch, size)
-validation_generator = LFDeep.DataGenerator(x_val, y_val, batch_size, batches_per_epoch, size)
+training_generator = LFPredict.DataGenerator(x_train, y_train, batch_size, batches_per_epoch, size)
+validation_generator = LFPredict.DataGenerator(x_val, y_val, batch_size, batches_per_epoch, size)
 
 
-model = LFDeep.create_amplitude_model()
+model = LFPredict.create_amplitude_model()
 
 model.summary()
 
@@ -30,6 +30,6 @@ model.fit(training_generator,
           epochs = 5,
           verbose = 1)
 
-LFDeep.evaluate_amplitude_model(model, validation_generator)
+LFPredict.evaluate_amplitude_model(model, validation_generator)
 
 embed()
