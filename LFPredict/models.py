@@ -13,13 +13,31 @@ _default_layers = [
         layers.Dense(2048, activation='relu'),]
 
 _default_optimizer = keras.optimizers.Adam(learning_rate=0.001)
+    
 
-def create_phase_model(input_shape = 1024,
+def _create_phase_branch(inputs, middle_layers = _default_layers):
+    x = Zscore1D()(inputs)
+    for layer in middle_layers:
+        x = layer(x)
+    x = layers.Dense(2, activation='linear')(x)
+    x = AngularOutput()(x)
+    return x
+    
+def _create_amplitude_branch(inputs, middle_layers = _default_layers):
+    x = Zscore1D()(inputs)
+    std_res = Std1D()(inputs)
+    for layer in middle_layers:
+        x = layer(x)
+    x = layers.Dense(1, activation='linear')(x)
+    x = layers.Multiply()([x, std_res])
+    return x
+    
+def create_phase_model(input_shape,
                        middle_layers = _default_layers,
                        optimizer = _default_optimizer,
                        loss = circular_loss):
     '''
-    Predict instantaneous phase of a band within a broadband signal. Uses sequential API.
+    Predict instantaneous phase of a band within a broadband signal.
     
     Keyword arguments:
     input_shape -- number of samples contained within a single input time series, default: 1024
@@ -28,22 +46,19 @@ def create_phase_model(input_shape = 1024,
     loss -- a loss function that should be circular, default: sqrt(1 - cos(phase_predicted - phase_true ) )
     '''
     
-    model_layers = [keras.Input(shape=( 1024,  1)), Zscore1D()]
-    model_layers.extend(middle_layers)
-    model_layers.extend([layers.Dense(2, activation='linear'), AngularOutput()])
-                  
-    model = keras.Sequential(model_layers)
+    inputs = keras.Input(shape=( input_shape,  1))
+    output = _create_phase_branch(inputs)
+    model = keras.Model(inputs=inputs, outputs=output, name="phase_model")
     model.compile(optimizer = optimizer, loss = loss)
-    
     return model
 
 
-def create_amplitude_model(input_shape = 1024,
+def create_amplitude_model(input_shape,
                            middle_layers = _default_layers,
                            optimizer = _default_optimizer,
                            loss = mean_abs_zscore_difference):
     '''
-    Predict instantaneous phase of a band within a broadband signal. Uses functional API.
+    Predict instantaneous amplitude of a band within a broadband signal.
     
     Keyword arguments:
     input_shape -- number of samples contained within a single input time series, default: 1024
@@ -52,21 +67,28 @@ def create_amplitude_model(input_shape = 1024,
     loss -- a loss function that should be circular, default: mean_abs_zscore_difference
     '''
     
-    inputs = keras.Input(shape=( 1024,  1))
-    zscoring = Zscore1D()
-    std_layer = Std1D()
-
-    graph = zscoring(inputs)
-    std_res = std_layer(inputs)
-
-    for middle_layer in middle_layers:
-        graph = middle_layer(graph)
-
-    z_amp = layers.Dense(1, activation='linear')(graph)
-
-    output = layers.Multiply()([z_amp, std_res])
-
+    inputs = keras.Input(shape=( input_shape,  1))
+    output = _create_amplitude_branch(inputs)
     model = keras.Model(inputs=inputs, outputs=output, name="amplitude_model")
-
-    model.compile(optimizer= optimizer, loss = loss)
+    model.compile(optimizer = optimizer, loss = loss)
     return model
+    
+    
+def create_joint_model(input_shape,
+                       middle_layers_amplitude = _default_layers,
+                       middle_layers_phase = _default_layers,
+                       optimizer = _default_optimizer,
+                       loss_amplitude = mean_abs_zscore_difference,
+                       loss_phase = circular_loss):
+    '''
+    Predict instantaneous amplitude and phase of a band within a broadband signal. Uses functional API.
+
+    '''
+    
+    inputs = keras.Input(shape=( input_shape,  1))
+    output_amplitude = _create_amplitude_branch(inputs)
+    output_phase = _create_phase_branch(inputs)
+    model = keras.Model(inputs=inputs, outputs= [output_amplitude, output_phase ], name="joint_model")
+    model.compile(optimizer = optimizer, loss = [loss_amplitude, loss_phase])
+    return model
+
