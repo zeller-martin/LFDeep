@@ -28,7 +28,7 @@ validation_generator = LFPredict.DataGenerator(x_train,
                                              size)
 
 
-model = LFPredict.create_joint_model(1024)
+model = LFPredict.create_joint_model(size)
 model.summary()
 
 model.fit(training_generator,

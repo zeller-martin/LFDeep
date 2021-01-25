@@ -15,7 +15,7 @@ x_train, y_train, x_val, y_val = LFPredict.split_data(x_files, y_files)
 training_generator = LFPredict.DataGenerator(x_train, y_train, batch_size, batches_per_epoch, size)
 validation_generator = LFPredict.DataGenerator(x_val, y_val, batch_size, batches_per_epoch, size)
 
-model = LFPredict.create_amplitude_model(1024)
+model = LFPredict.create_amplitude_model(size)
 model.summary()
 
 model.fit(training_generator,
