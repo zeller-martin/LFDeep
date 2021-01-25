@@ -11,8 +11,9 @@ class Zscore1D(keras.layers.Layer):
     '''
     
     
-    def __init__(self):
-        super(Zscore1D, self).__init__()
+    def __init__(self, name = None,  **kwargs):
+        super(Zscore1D, self).__init__(name = name)
+        super(Zscore1D, self).__init__(**kwargs)
         
     def call(self, inputs):
         mean = tf.math.reduce_mean(inputs, axis = 1, keepdims = True)
@@ -27,8 +28,9 @@ class AngularOutput(keras.layers.Layer):
     inputs -- a tensor with shape (N, 2), where (:, 0) contains sines and (:, 1) the cosines of N angles.
     '''
     
-    def __init__(self):
-        super(AngularOutput, self).__init__()
+    def __init__(self, name = None,  **kwargs):
+        super(AngularOutput, self).__init__(name = name)
+        super(AngularOutput, self).__init__(**kwargs)
     
     def call(self, inputs):
         angle = tf.atan2(inputs[:,0],inputs[:,1])
@@ -43,8 +45,9 @@ class Std1D(keras.layers.Layer):
     Positional arguments:
     inputs -- a tensor with shape (N, T, 1), where N is the number of individual timeseries and T the number of samples.
     '''
-    def __init__(self):
-        super(Std1D, self).__init__()
+    def __init__(self, name = None,  **kwargs):
+        super(Std1D, self).__init__(name = name)
+        super(Std1D, self).__init__(**kwargs)
         
     def call(self, inputs):
         return tf.math.reduce_std(inputs, axis = 1)

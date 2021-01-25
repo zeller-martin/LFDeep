@@ -92,3 +92,7 @@ def create_joint_model(input_shape,
     model.compile(optimizer = optimizer, loss = [loss_amplitude, loss_phase])
     return model
 
+def load_model(path):
+    from .layers import Zscore1D, AngularOutput, Std1D
+    custom_objects = {"Zscore1D": Zscore1D, "AngularOutput": AngularOutput, "Std1D": Std1D}
+    return keras.models.load_model(path, custom_objects = custom_objects, compile = False)

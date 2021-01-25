@@ -256,4 +256,3 @@ def evaluate_joint_model(model, validation_generator, amp_idx, phase_idx):
     
     _check_circular_difference(y[phase_idx], phase)
     _check_amplitude_difference(y[amp_idx], amplitude)
-    
