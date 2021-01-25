@@ -3,8 +3,8 @@ import glob
 
 model_name = 'example_phase_model'
 
-batch_size = 8192
-batches_per_epoch = 16
+batch_size = 64
+batches_per_epoch = 256
 size = 1024
 
 x_files = glob.glob('data/*CA1*_raw.float32')

@@ -11,7 +11,6 @@ byte recv_byte;
 
 
 unsigned long last_reset = 0;
-byte last_reset_phase = 0; // 0 if trough, 1 if rising zero intercept, 2 if peak, 3 if falling zero intercept
 unsigned long cycle_length = 0;
 unsigned long current_phase;
 unsigned long stim_start;
@@ -72,7 +71,6 @@ void sync_clock() {
 
 void predict_phase() {
   current_phase = clock_time - last_reset; 
-  current_phase += (last_reset_phase * cycle_length)/ 4;
   current_phase %= cycle_length;
 }
 

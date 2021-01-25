@@ -9,8 +9,8 @@ from .losses import *
 _default_layers = [
         layers.Conv1D(16, kernel_size= 64, padding = 'same', activation='linear'),
         layers.Flatten(),
-        layers.Dense(4096, activation='relu'),
-        layers.Dense(2048, activation='relu'),]
+        layers.Dense(2048, activation='relu'),
+        layers.Dense(512, activation='tanh'),]
 
 _default_optimizer = keras.optimizers.Adam(learning_rate=0.001)
     
@@ -40,7 +40,7 @@ def create_phase_model(input_shape,
     Predict instantaneous phase of a band within a broadband signal.
     
     Keyword arguments:
-    input_shape -- number of samples contained within a single input time series, default: 1024
+    input_shape -- number of samples contained within a single input time series
     middle_layers -- model architecture after z-scoring and before circular output, default: see deep_loop/models.py
     optimizer -- training optimizer, default: keras.optimizers.Adam(learning_rate=0.001)
     loss -- a loss function that should be circular, default: sqrt(1 - cos(phase_predicted - phase_true ) )
@@ -61,7 +61,7 @@ def create_amplitude_model(input_shape,
     Predict instantaneous amplitude of a band within a broadband signal.
     
     Keyword arguments:
-    input_shape -- number of samples contained within a single input time series, default: 1024
+    input_shape -- number of samples contained within a single input time series
     middle_layers -- model architecture after z-scoring and before amplitude output, default: see deep_loop/models.py
     optimizer -- training optimizer, default: keras.optimizers.Adam(learning_rate=0.001)
     loss -- a loss function that should be circular, default: mean_abs_zscore_difference

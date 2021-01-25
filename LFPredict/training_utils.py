@@ -136,13 +136,15 @@ class DataGenerator(keras.utils.Sequence) :
             sample_y = sample_x + self.size - 1 + self.y_offset
             
             x_example = np.array(self.x_data[f_idx][sample_x : sample_x + self.size]).flatten()
-            x_example = self._preprocessing_callback(x_example)
             batch_x.append(x_example.reshape(( self.size,1 )) )
 
             for i in range(self._n_outputs):
                 batch_y[i].append(np.array(
                             self.y_data[i][f_idx][sample_y])
                           )
+        batch_x = np.array(batch_x)
+        
+        batch_x = self._preprocessing_callback(batch_x)
         for i in range(self._n_outputs):
             batch_y[i] = np.array(batch_y[i])
         
