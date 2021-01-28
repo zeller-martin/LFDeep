@@ -3,9 +3,10 @@
 elapsedMillis clock_time;
 
 
-const byte clock_pin = 29;
-const byte sync_pin = LED_BUILTIN;
-const byte stim_pin = 3;
+const byte clock_pin = 3;
+//const byte sync_pin = LED_BUILTIN;
+const byte sync_pin = 2;
+const byte stim_pin = 2;
 
 byte recv_byte;
 

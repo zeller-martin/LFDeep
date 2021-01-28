@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 from scipy import stats
-from IPython import embed
+from .benchmark import estimate_phase_hilbert
 
 class DataGenerator(keras.utils.Sequence) :
     '''
@@ -220,7 +220,7 @@ def _check_amplitude_difference(y, y_pred):
     plt.show()
 
 
-def evaluate_phase_model(model, validation_generator):
+def evaluate_phase_model(model, validation_generator, do_hilb = False, hilb_fs = None, hilb_freq = None):
     '''
     Helper function for a quick graphical evaluation of a phase model.
     
@@ -232,6 +232,16 @@ def evaluate_phase_model(model, validation_generator):
     x, y = validation_generator[0]
     y_pred = model(x).numpy().flatten()
     _check_circular_difference(y, y_pred)
+
+        
+    if do_hilb:
+        
+        y_hilb = list()
+        for i in range(x.shape[0]):
+            y_hilb.append(estimate_phase_hilbert(x[i,:,:].flatten(), hilb_fs, hilb_freq))
+        _check_circular_difference(y, y_hilb)
+    
+    
 
 
 def evaluate_amplitude_model(model, validation_generator):

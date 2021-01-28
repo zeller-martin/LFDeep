@@ -1,13 +1,13 @@
 import LFPredict
 import glob
-
+from IPython import embed
 model_name = 'example_phase_model'
 
-batch_size = 64
-eval_batch = 16384
+batch_size = 512
+eval_batch = 512
 batches_per_epoch = 256
 size = 1024
-epochs = 100
+epochs = 50
 
 x_files = glob.glob('data/*CA1*_raw.float32')
 y_files = glob.glob('data/*CA1*_theta_phase.float32')
@@ -30,6 +30,8 @@ model.fit(training_generator,
           epochs = epochs,
           verbose = 1)
    
-LFPredict.evaluate_phase_model(model, validation_generator)
+LFPredict.evaluate_phase_model(model, validation_generator, do_hilb=True, hilb_fs = 1000, hilb_freq = (6,10))
 
 model.save(model_name + '.h5')
+
+embed()

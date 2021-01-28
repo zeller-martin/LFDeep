@@ -2,7 +2,8 @@
 from tensorflow import keras
 from time import time, sleep
 import numpy as np
-model = keras.models.load_model('NET_7_predphase.keras',compile=False)
+from LFPredict import load_model
+model = load_model(r'..\training\example_phase_model.h5')
 prediction = model(np.zeros((1,1024,1), dtype = np.float32)) # warm up the model
 
 from netcom_wrap import *
@@ -16,36 +17,6 @@ from time import sleep
 from scipy import signal
 from numba import njit
 import pycircstat as pcs
-
-
-def zscore(y):
-    return (y - np.mean(y)) / np.std(y)
-
-def get_csc_data(stream_name):
-    success, data, time_base, time_offset = mlab.csc_to_python(stream_name, nargout = 4) 
-    if not success:
-        return None
-
-    data = np.array(data._data)
-    try:
-        time_offset = np.array(time_offset._data)
-    except AttributeError:
-        time_offset = np.array(time_offset)
-    timestamps = time_base + time_offset
-
-    return data, timestamps.flatten()
-
-
-def estimate_phase(x):
-    x_cos = np.diff(x)
-    x_cos *= np.sum(np.abs(x)) / np.sum(np.abs(x_cos))
-    return -np.angle(x[:-1] + 1j * x_cos) + np.pi
-
-def estimate_frequency(phase, fs = 1250 / 8 ):
-    pdiff = pcs.cdiff(phase[1:], phase[:-1])
-    return np.median(pdiff) * fs / 2 / np.pi
-
-     
 
  
 class Stimulator:
@@ -93,7 +64,7 @@ class Stimulator:
         self._serial.close()
 
 fs = 30000
-stimulus_freq = 3.5
+stimulus_freq = 8
 stim_start = 0.8 * np.pi
 stim_end = 1.2* np.pi
 
@@ -103,8 +74,8 @@ max_f = 5
 
 buffer_size = 2**16
 sync_bit = 4
-stream_chan = 'S1R1'
-serial_port = 'COM5'
+stream_chan = 'CSC04'
+serial_port = 'COM6'
 baud_rate = 115200
 
 phase_start = 0.9 * np.pi
@@ -137,8 +108,7 @@ while True:
         a = time()
         
         # preprocess recent ring buffer content
-        preprocessed = signal.sosfiltfilt(sos, ring_buffer[:])[::24]
-        preprocessed = zscore(preprocessed[-1024:])
+        preprocessed = 1 * ring_buffer[:][::30][-1024:]
         preprocessed.resize(1, 1024, 1 )
         
         #predict instantaneous phase and frequency using a shallow CNN
@@ -147,12 +117,11 @@ while True:
         phase = prediction[-1]
         #ps.append(phase)
         
-        frequency = estimate_frequency(prediction[-10:-1])
         
         
         #freqs.append(frequency)
-        timestamp = ring_buffer.timestamp_ms_at(-5 * 192 )
-        stimulator.update_stimulus(timestamp, phase, frequency, phase_start, phase_end)
+        timestamp = ring_buffer.timestamp_ms_at(-1)
+        stimulator.update_stimulus(timestamp, phase, 8, phase_start, phase_end)
         looptime[j % 100] = time() - a
         j += 1
         sleep(.02)
@@ -161,7 +130,7 @@ while True:
         print(f"Average evaluation time (ms): {np.round(np.mean(looptime * 1000), 2)}")
         stimulator.synchronize()
     
-    if j == 20000:
+    if j == 10000:
         break
     
 stimulator.turn_off_stimulus()
