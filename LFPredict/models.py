@@ -47,7 +47,7 @@ def create_phase_model(input_shape,
     '''
     
     inputs = keras.Input(shape=( input_shape,  1))
-    output = _create_phase_branch(inputs)
+    output = _create_phase_branch(inputs, middle_layers = middle_layers)
     model = keras.Model(inputs=inputs, outputs=output, name="phase_model")
     model.compile(optimizer = optimizer, loss = loss)
     return model
@@ -68,7 +68,7 @@ def create_amplitude_model(input_shape,
     '''
     
     inputs = keras.Input(shape=( input_shape,  1))
-    output = _create_amplitude_branch(inputs)
+    output = _create_amplitude_branch(inputs, middle_layers = middle_layers)
     model = keras.Model(inputs=inputs, outputs=output, name="amplitude_model")
     model.compile(optimizer = optimizer, loss = loss)
     return model
@@ -86,8 +86,8 @@ def create_joint_model(input_shape,
     '''
     
     inputs = keras.Input(shape=( input_shape,  1))
-    output_amplitude = _create_amplitude_branch(inputs)
-    output_phase = _create_phase_branch(inputs)
+    output_amplitude = _create_amplitude_branch(inputs, middle_layers = middle_layers_amplitude)
+    output_phase = _create_phase_branch(inputs, middle_layers = middle_layers_phase)
     model = keras.Model(inputs=inputs, outputs= [output_amplitude, output_phase ], name="joint_model")
     model.compile(optimizer = optimizer, loss = [loss_amplitude, loss_phase])
     return model

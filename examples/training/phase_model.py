@@ -15,12 +15,20 @@ y_files = glob.glob('data/*CA1*_theta_phase.float32')
 x_train, y_train, x_val, y_val = LFPredict.split_data(x_files, y_files)
 
 from tensorflow import keras
-test_opt = keras.optimizers.Adam(learning_rate=0.00001)
+test_opt = keras.optimizers.Adam(learning_rate=0.000005)
 
 training_generator = LFPredict.DataGenerator(x_train, y_train, batch_size, batches_per_epoch, size)
 validation_generator = LFPredict.DataGenerator(x_val, y_val, eval_batch, batches_per_epoch, size)
 
-model = LFPredict.create_phase_model(size, optimizer = test_opt)
+from tensorflow.keras import layers
+
+middle_layers = [layers.Conv1D(8, kernel_size= 16, padding = 'same', activation='relu'),
+        layers.AveragePooling1D(pool_size = 2 ),
+        layers.Flatten()]
+
+
+
+model = LFPredict.create_phase_model(size, middle_layers = middle_layers, optimizer = test_opt)
 model.summary()
 
 model.fit(training_generator,
