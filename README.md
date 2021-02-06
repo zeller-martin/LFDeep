@@ -1,5 +1,3 @@
-Note: While the package is functional, it is still work in progress and at an experimental stage.
-
 # LFPredict
 
 LFPredict contains utilities to predict the instantaneous amplitude and phase of a signal in a specific frequency band under causal conditions and in real time, using the unfiltered broadband signal as an input. The repository contains code for end-to-end training of neural networks in Keras, given training data where amplitude or phase are extracted from the broadband input using digital acausal filtering.
@@ -7,11 +5,7 @@ LFPredict contains utilities to predict the instantaneous amplitude and phase of
 The projected and intended use lies in real-time prediction on local field potentials (LFP), which serve as a signature of oscillatory brain activity. Experimentalists can thus incorporate LFPredict models within their experimental toolchain, to deliver stimuli in a manner that is conditional on the instantaneous amplitude or phase of a band-limited oscillation within the broadband LFP signal.
 
 # Prerequisities
-LFPredict needs Tensorflow 2, numpy, scipy and matplotlib. Having a GPU Tensorflow installation will speed up training and inference, but for the comparatively shallow networks it is not strictly necessary. Examples may have additional dependencies.
-
-# Installation
-
-to be written ...
+LFPredict needs Tensorflow 2, numpy, scipy and matplotlib. Examples may have additional dependencies.
 
 # Quickstart
 
